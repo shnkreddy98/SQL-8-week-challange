@@ -1,7 +1,7 @@
 import os
 from configparser import ConfigParser
-import mysql.connector
-
+from mysql.connector import MySQLConnection, Error
+from pandas import DataFrame
 
 def read_config(config_file = 'config.ini', section = 'mysql'):
     """
@@ -42,3 +42,38 @@ def create_database(cursor, DB_NAME):
     except mysql.connector.Error as err:
         print("Failed creating database: {}".format(err))
         exit(1)
+
+def dataframe_query(conn, sql):
+    """
+    Use the database connection conn to execute
+    the SQL code. Return the resulting row count
+    and the rows as a dataframe or (0, None) 
+    if there were no rows. If the query failed,
+    raise an exception.
+    """
+    try:
+        cursor = conn.cursor()
+        cursor.execute(sql)
+
+        rows  = cursor.fetchall()
+        count = cursor.rowcount
+
+        if count > 0:
+
+            # Get the names of the columns.
+            columns = cursor.description
+            column_names = [column_info[0] 
+                            for column_info in columns]
+
+            # Return the query results in a dataframe.
+            df = DataFrame(rows)
+            df.columns = column_names
+            cursor.close()
+            return count, df, df.columns
+
+        else:
+            cursor.close()
+            return 0, None
+        
+    except Error as e:
+        raise Exception(f'Query failed: {e}')
