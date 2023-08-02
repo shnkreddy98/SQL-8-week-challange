@@ -13,7 +13,8 @@ menu
 members
 You can inspect the entity relationship diagram and example data below.
 
-![ERDiagram.png](attachment:ERDiagram.png)
+![ERDiagram.png](https://github.com/shnkreddy98/SQL-8-week-challange/blob/main/DannysDiner/ERDiagram.png 112)
+
 
 
 ```python
